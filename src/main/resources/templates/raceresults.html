@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/styles.css">
+	<title>Results</title>
+</head>
+
+<body>
+	<div class="content-container">
+		<img src="/formula-1-logo-2.png" width="200">
+		<h4><a th:href="@{/search}">Back</a></h4>
+
+		<div th:if="${#lists.isEmpty(results)}">
+			<h3>No Result</h3>
+		</div>
+		<div th:each="race : ${results}">
+			<h2><span th:text="${race.season}"></span> <span th:text="${race.raceName}"></span></h2>
+			<h3>Results:</h3>
+			<div th:each="result : ${race.raceResults}">
+				<h3>P<span th:text="${result.positionText}"></span><br></h3>
+				<p>
+					Driver Name: <span th:text="${result.driverName}"></span><br>
+					Constructor: <span th:text="${result.constructor}"></span><br>
+					Status: <span th:text="${result.status}"></span><br>
+					Time: <span th:text="${result.time}"></span><br>
+				</p>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

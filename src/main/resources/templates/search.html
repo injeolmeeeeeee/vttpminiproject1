@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Search</title>
+</head>
+
+<body>
+    <div class="content-container">
+        <div class="content">
+            <img src="formula-1-logo-2.png" width="200">
+            <h4><a th:href="@{/login}">Back</a></h4>
+            <h2>Search for Race Results</h2>
+            <form action="/search/lastresult" method="get">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" type="submit">Most Recent Race Results</button>
+                </div>
+            </form>
+
+            <div style="margin-bottom: 20px;"></div>
+
+            <form action="/search/race" method="get">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" type="submit">Search for Race</button>
+                </div>
+            </form>
+
+            <!-- <h2>Search History</h2>
+            <div th:if="${lastSearchResults}">
+                <ul>
+                    <li th:each="result : ${lastSearchResults}">
+                        <p th:text="${result.season + ' - ' + result.raceName}"></p>
+                        <ul>
+                            <li th:each="details : ${result.raceResults}">
+                                <p th:text="${details.positionText + ' - ' + details.driverName}"></p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div> -->
+        </div>
+    </div>
+</body>
+
+</html>
