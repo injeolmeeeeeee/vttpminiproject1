@@ -10,6 +10,7 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import vttp.iss.nus.miniproject1vttp.model.RaceResult;
 import vttp.iss.nus.miniproject1vttp.model.ResultDetails;
+import vttp.iss.nus.miniproject1vttp.repo.LastResultsRepo;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -18,7 +19,25 @@ import java.util.List;
 @Service
 public class LastResultsService {
 
+    private final LastResultsRepo lastResultsRepo;
+
+    public LastResultsService(LastResultsRepo lastResultsRepo) {
+        this.lastResultsRepo = lastResultsRepo;
+    }
+
     public List<RaceResult> getLastResults() {
+        List<RaceResult> cachedResult = lastResultsRepo.getLastResult();
+
+        if (cachedResult != null) {
+            return cachedResult;
+        } else {
+            List<RaceResult> freshResult = getApiResults();
+            lastResultsRepo.cacheLastResult(freshResult);
+            return freshResult;
+        }
+    }
+
+    public List<RaceResult> getApiResults() {
         String url = "https://ergast.com/api/f1/current/last/results.json";
         RestTemplate template = new RestTemplate();
 
@@ -76,6 +95,5 @@ public class LastResultsService {
             return List.of();
         }
     }
-
 
 }

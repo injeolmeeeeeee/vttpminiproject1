@@ -30,11 +30,8 @@ public class RaceResultsService {
 
     private final Logger logger = Logger.getLogger(RaceResultsService.class.getName());
 
-    private final RestTemplate restTemplate;
+    RestTemplate restTemplate = new RestTemplate();
 
-    public RaceResultsService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     // @Cacheable("availableYears")
     public List<String> getAvailableYear() {

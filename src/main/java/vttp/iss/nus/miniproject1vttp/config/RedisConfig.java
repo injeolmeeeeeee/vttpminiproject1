@@ -1,90 +1,54 @@
 package vttp.iss.nus.miniproject1vttp.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.web.client.RestTemplate;
 
 import vttp.iss.nus.miniproject1vttp.model.RaceResult;
 
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.data.redis.port:6379}")
     private Integer redisPort;
 
-    @Value("${spring.redis.username}")
+    @Value("${spring.data.redis.username}")
     private String redisUsername;
 
-    @Value("${spring.redis.password}")
+    @Value("${spring.data.redis.password}")
     private String redisPassword;
 
-    @Value("${formula1.cache.timeout.minutes}")
-    private long timeout;
+    @Bean("lastracecache")
+    public RedisTemplate<String, List<RaceResult>> redisTemplate() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+        config.setHostName(redisHost);
+        config.setPort(redisPort);
+        config.setUsername(redisUsername);
+        config.setPassword(redisPassword);
 
-    public long getTimeout() {
-        return timeout;
-    }
+        JedisConnectionFactory factory = new JedisConnectionFactory(config);
+        factory.afterPropertiesSet();
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+        RedisTemplate<String, List<RaceResult>> template = new RedisTemplate<>();
+        template.setConnectionFactory(factory);
 
-    @Bean
-    public RaceResult raceResult() {
-        return new RaceResult();
-    }
+        StringRedisSerializer stringSerializer = new StringRedisSerializer();
+        JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer();
 
-    @Bean("redis")
-    public JedisConnectionFactory jedisConnFactory() {
-
-        System.out.println(redisUsername);
-        System.out.println(redisPassword);
-        System.out.println(redisHost);
-        System.out.println(redisPort);
-
-        RedisStandaloneConfiguration rsc = new RedisStandaloneConfiguration(redisHost, redisPort);
-
-        // if (redisUsername != null && !redisUsername.isEmpty()) {
-        //     rsc.setUsername(redisUsername);
-        // }
-
-        // if (redisPassword != null && !redisPassword.isEmpty()) {
-        //     rsc.setPassword(redisPassword);
-        // }
-
-        JedisClientConfiguration jedisClient = JedisClientConfiguration.builder().build();
-        JedisConnectionFactory jedisFac = new JedisConnectionFactory(rsc, jedisClient);
-        jedisFac.afterPropertiesSet();
-
-        return jedisFac;
-    }
-
-    @Bean("cache")
-    public HashOperations<String, String, RaceResult> hashOperations(RedisTemplate<String, String> redisTemplate) {
-        return redisTemplate.opsForHash();
-    }
-
-    @Bean("formula1Cache")
-    public RedisTemplate<String, RaceResult> formula1CacheTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, RaceResult> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setKeySerializer(stringSerializer);
+        template.setValueSerializer(jdkSerializer);
+        template.setHashKeySerializer(stringSerializer);
+        template.setHashValueSerializer(jdkSerializer);
 
         return template;
     }
