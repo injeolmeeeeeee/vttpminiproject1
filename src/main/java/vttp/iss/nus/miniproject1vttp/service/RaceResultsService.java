@@ -112,7 +112,7 @@ public class RaceResultsService {
             String json = response.getBody();
     
             logger.info(url);
-            logger.info(json);
+            // logger.info(json);
     
             JsonReader reader = Json.createReader(new StringReader(json));
             JsonObject mrData = reader.readObject().getJsonObject("MRData");
